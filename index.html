@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulse — Deriv Market Analyzer</title>
+<style>
+:root{--bg:#080d18;--panel:#101827;--panel2:#0d1422;--line:#202c40;--muted:#8291a8;--text:#edf3ff;--cyan:#5ce1e6;--green:#42d6a4;--red:#ff7185;--yellow:#f6c96b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 20% -20%,#162b43 0,transparent 45%),var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1440px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#65e8e7,#5574ff);color:#07111b;font-weight:900;font-size:21px;box-shadow:0 0 28px #5ce1e622}.brand h1{font-size:19px;letter-spacing:.2px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.pill{border:1px solid var(--line);background:#0d1523;padding:8px 12px;border-radius:999px;color:var(--muted);display:flex;align-items:center;gap:8px;font-size:12px}.dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);display:inline-block}.dot.live{background:var(--green);box-shadow:0 0 9px #42d6a488}.dot.bad{background:var(--red)}
+.hero{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin:16px 0 18px}.eyebrow{font-size:11px;color:var(--cyan);text-transform:uppercase;letter-spacing:1.8px;font-weight:800}.hero h2{font-size:clamp(25px,4vw,36px);margin:6px 0 4px;letter-spacing:-1px}.hero p{color:var(--muted);margin:0}.controls{display:flex;gap:9px;flex-wrap:wrap}.controls input{width:125px;min-width:110px}
+select,button,input{font:inherit;border-radius:10px;border:1px solid var(--line);background:#111b2c;color:var(--text);padding:10px 12px;outline:none}select{min-width:165px}button{cursor:pointer;font-weight:700}button.primary{background:var(--cyan);color:#07151b;border-color:var(--cyan)}button:hover{filter:brightness(1.08)}
+.grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(270px,.85fr);gap:16px}.card{background:linear-gradient(160deg,#111b2b,#0c1320);border:1px solid var(--line);border-radius:18px;padding:17px;min-width:0;box-shadow:0 12px 35px #0002}.cardhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}.cardhead h3{font-size:14px;margin:0;font-weight:750}.muted{color:var(--muted)}.small{font-size:11px}.price{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-1px;margin:4px 0}.change{font-size:12px;color:var(--muted)}.chartmeta{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}.chartarea{height:280px;margin-top:12px;position:relative}.chartarea canvas{width:100%;height:100%;display:block}.chartfoot{display:flex;gap:15px;flex-wrap:wrap;color:var(--muted);font-size:11px;margin-top:10px}.legend{display:inline-flex;align-items:center;gap:5px}.legend i{width:8px;height:8px;border-radius:3px;display:inline-block}
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}.stat{background:#0c1422;border:1px solid var(--line);padding:14px;border-radius:14px}.stat label{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}.stat strong{font-size:18px}.signal{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:#0b1421;border-radius:15px;padding:15px;margin:10px 0 15px}.signalIcon{width:44px;height:44px;display:grid;place-items:center;border-radius:13px;background:#263247;font-size:22px}.signal strong{display:block;font-size:18px}.signal .muted{font-size:11px}.signalTag{margin-left:auto;font-size:10px;border-radius:999px;padding:6px 8px;background:#1a2a39;color:var(--cyan);font-weight:800;white-space:nowrap}
+.indicator{padding:12px 0;border-bottom:1px solid #1d293b}.indicator:last-child{border-bottom:0}.indicatorTop{display:flex;justify-content:space-between;gap:12px;font-size:12px}.indicatorTop b{font-weight:750}.bar{height:5px;background:#202c40;border-radius:9px;margin-top:9px;overflow:hidden}.bar span{height:100%;display:block;border-radius:9px;background:var(--cyan);width:50%}
+.bottom{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-top:16px}.history{width:100%;border-collapse:collapse;font-size:12px}.history th{text-align:left;color:var(--muted);font-weight:600;padding:10px 6px;border-bottom:1px solid var(--line)}.history td{padding:12px 6px;border-bottom:1px solid #1a2537}.tag{font-size:10px;font-weight:800;padding:5px 7px;border-radius:7px}.bull{background:#12352f;color:var(--green)}.bear{background:#3b202b;color:var(--red)}.neutral{background:#282d37;color:#c1c9d7}
+.note{border:1px solid #343044;background:#171425;color:#c5bfd8;border-radius:12px;padding:12px;font-size:11px;margin-top:15px}.statusline{font-size:11px;color:var(--muted);margin-top:10px;min-height:16px}.footer{color:#65748c;text-align:center;font-size:11px;padding:22px 0 8px}
+@media(max-width:850px){.grid,.bottom{grid-template-columns:1fr}.chartarea{height:245px}.wrap{padding:14px}.statrow{gap:8px}.stat{padding:11px}.stat strong{font-size:16px}}
+@media(max-width:430px){.controls{width:100%}.controls select,.controls button{flex:1;min-width:0}.pill{font-size:11px}.card{padding:13px}.chartarea{height:220px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand"><div class="logo">P</div><div><h1>PULSE <span style="color:var(--cyan)">/</span> MARKET INTELLIGENCE</h1><p>Deriv synthetic markets · Signal terminal</p></div></div>
+  <div class="pill"><span id="dot" class="dot"></span><span id="connection">Not connected</span></div>
+</header>
+<section class="hero">
+  <div><div class="eyebrow">Market overview</div><h2>Read the market. Trade with a plan.</h2><p>Live market data with transparent technical conditions.</p></div>
+  <div class="controls">
+    <input id="appId" aria-label="Deriv App ID" inputmode="numeric" placeholder="Deriv App ID" title="Enter your registered Deriv app ID"><select id="market" aria-label="Market"><option value="R_100">Volatility 100 Index</option><option value="R_75">Volatility 75 Index</option><option value="R_50">Volatility 50 Index</option><option value="R_25">Volatility 25 Index</option><option value="R_10">Volatility 10 Index</option><option value="1HZ100V">Volatility 100 (1s) Index</option><option value="1HZ75V">Volatility 75 (1s) Index</option><option value="1HZ50V">Volatility 50 (1s) Index</option><option value="1HZ25V">Volatility 25 (1s) Index</option><option value="1HZ10V">Volatility 10 (1s) Index</option></select>
+    <select id="timeframe" aria-label="Timeframe"><option value="60">1 minute</option><option value="300">5 minutes</option><option value="900">15 minutes</option><option value="3600">1 hour</option></select>
+    <button class="primary" id="connect">Connect live data</button>
+  </div>
+</section>
+<div class="statrow">
+  <div class="stat"><label>LIVE PRICE</label><strong id="miniPrice">—</strong><div class="small muted">Selected market</div></div>
+  <div class="stat"><label>MARKET BIAS</label><strong id="miniBias">Waiting</strong><div class="small muted">EMA trend + RSI filter</div></div>
+  <div class="stat"><label>DATA POINTS</label><strong id="tickCount">0</strong><div class="small muted">Received this session</div></div>
+</div>
+<main class="grid">
+  <section class="card">
+    <div class="cardhead"><h3>Price action</h3><span class="pill" id="chartStatus">Awaiting connection</span></div>
+    <div class="chartmeta"><div><div class="muted small" id="marketName">Volatility 100 Index</div><div class="price" id="price">—</div><div class="change" id="priceSub">Connect to Deriv to load market data</div></div><div class="pill">● <span id="tfLabel">1 minute candles</span></div></div>
+    <div class="chartarea"><canvas id="chart"></canvas></div>
+    <div class="chartfoot"><span class="legend"><i style="background:var(--green)"></i> Bull candle</span><span class="legend"><i style="background:var(--red)"></i> Bear candle</span><span>EMA 9 / EMA 21 overlay</span></div>
+    <div id="liveMsg" class="statusline">Enter your registered Deriv App ID, then connect to live data.</div>
+  </section>
+  <aside class="card">
+    <div class="cardhead"><h3>Signal engine</h3><span class="pill">RULE-BASED</span></div>
+    <div class="signal"><div class="signalIcon" id="signalIcon">◈</div><div><strong id="signalTitle">Waiting for data</strong><div id="signalDesc" class="muted">Connect to calculate indicators</div></div><span id="signalTag" class="signalTag">WAIT</span></div>
+    <div class="indicator"><div class="indicatorTop"><span class="muted">EMA trend (9 / 21)</span><b id="emaText">—</b></div><div class="bar"><span id="emaBar"></span></div></div>
+    <div class="indicator"><div class="indicatorTop"><span class="muted">RSI (14)</span><b id="rsiText">—</b></div><div class="bar"><span id="rsiBar"></span></div></div>
+    <div class="indicator"><div class="indicatorTop"><span class="muted">Recent momentum</span><b id="momText">—</b></div><div class="bar"><span id="momBar"></span></div></div>
+    <div class="note"><b>Important:</b> Signals are educational rule-based estimates, not guaranteed predictions. Synthetic markets can move quickly. Verify conditions independently; this version does not place trades.</div>
+  </aside>
+</main>
+<section class="bottom">
+  <div class="card"><div class="cardhead"><h3>Recent market readings</h3><span class="muted small">This session</span></div><table class="history"><thead><tr><th>TIME</th><th>PRICE</th><th>BIAS</th><th>RSI</th></tr></thead><tbody id="history"><tr><td colspan="4" class="muted">No readings yet</td></tr></tbody></table></div>
+  <div class="card"><div class="cardhead"><h3>Connection & setup</h3><span class="pill">PUBLIC DATA</span></div>
+    <p class="muted" style="font-size:12px;margin-top:0">This first version reads public market data. It does not need your Deriv password or account token.</p>
+    <div class="indicator"><div class="indicatorTop"><span class="muted">Market feed</span><b id="feedState">Disconnected</b></div></div>
+    <div class="indicator"><div class="indicatorTop"><span class="muted">Selected symbol</span><b id="symbolText">R_100</b></div></div>
+    <div class="indicator"><div class="indicatorTop"><span class="muted">Signal timeframe</span><b id="timeText">1 minute</b></div></div>
+    <p class="muted small">Register an app in Deriv's developer dashboard and enter its App ID above. If the connection fails, check your internet connection and whether the selected symbol is currently available.</p>
+  </div>
+</section>
+<div class="footer">PULSE Analyzer · Independent tool, not an official Deriv product · Market data availability may vary.</div>
+</div>
+<script>
+(() => {
+ const $ = id => document.getElementById(id);
+ const wsEndpoint = 'wss://ws.derivws.com/websockets/v3?app_id=';
+ let ws=null, req=0, tickCount=0, ticks=[], candles=[], history=[], lastPrice=null, lastCandleBucket=null, selectedSymbol='R_100', granularity=60, reconnectTimer=null, manualClose=false;
+ const colors={green:'#42d6a4',red:'#ff7185',cyan:'#5ce1e6',muted:'#8291a8',grid:'#202c40',text:'#edf3ff'};
+ const marketNames={'R_100':'Volatility 100 Index','R_75':'Volatility 75 Index','R_50':'Volatility 50 Index','R_25':'Volatility 25 Index','R_10':'Volatility 10 Index','1HZ100V':'Volatility 100 (1s) Index','1HZ75V':'Volatility 75 (1s) Index','1HZ50V':'Volatility 50 (1s) Index','1HZ25V':'Volatility 25 (1s) Index','1HZ10V':'Volatility 10 (1s) Index'};
+ function setStatus(text,kind=''){ $('connection').textContent=text; $('dot').className='dot '+(kind==='live'?'live':kind==='bad'?'bad':''); $('feedState').textContent=text; }
+ function send(data){ if(ws && ws.readyState===WebSocket.OPEN) ws.send(JSON.stringify({...data,req_id:++req})); }
+ function connect(){
+   const appId=$('appId').value.trim(); if(!/^\d+$/.test(appId)){setStatus('App ID needed','bad');$('liveMsg').textContent='Enter your registered Deriv App ID. Register an app in the Deriv developer dashboard first.';return;}
+   manualClose=false; if(ws){try{ws.close()}catch(e){}}
+   clearTimeout(reconnectTimer); setStatus('Connecting…'); $('liveMsg').textContent='Opening public market-data connection…'; $('chartStatus').textContent='Connecting';
+   try { ws=new WebSocket(wsEndpoint+encodeURIComponent(appId)); } catch(e){ setStatus('Connection error','bad'); $('liveMsg').textContent='Could not open WebSocket: '+e.message; return; }
+   ws.onopen=()=>{setStatus('Connected','live');$('liveMsg').textContent='Connected. Requesting historical candles and live ticks…'; send({active_symbols:'brief',product_type:'basic'}); loadHistory(); send({ticks:selectedSymbol,subscribe:1});};
+   ws.onmessage=e=>{let d;try{d=JSON.parse(e.data)}catch(_){return}
+     if(d.error){$('liveMsg').textContent='Deriv API: '+d.error.message; if(d.error.code==='InvalidAppID'||d.error.code==='AuthorizationRequired') setStatus('API issue','bad'); return;}
+     if(d.active_symbols){const found=d.active_symbols.find(x=>x.symbol===selectedSymbol); if(found){marketNames[selectedSymbol]=found.display_name||marketNames[selectedSymbol];$('marketName').textContent=marketNames[selectedSymbol];}}
+     if(d.history && d.candles){candles=d.candles.map(c=>({epoch:Number(c.epoch),open:Number(c.open),high:Number(c.high),low:Number(c.low),close:Number(c.close)}));lastCandleBucket=candles.length?Math.floor(candles[candles.length-1].epoch/granularity)*granularity:null; updateAnalysis();drawChart();}
+     if(d.tick){const t=d.tick; const p=Number(t.quote), epoch=Number(t.epoch); if(!Number.isFinite(p))return; tickCount++; $('tickCount').textContent=tickCount.toLocaleString(); lastPrice=p; ticks.push({price:p,epoch});if(ticks.length>500)ticks.shift(); updateCandle(p,epoch); $('price').textContent=fmt(p);$('miniPrice').textContent=fmt(p);$('priceSub').textContent='Updated '+new Date(epoch*1000).toLocaleTimeString();updateAnalysis();drawChart();}
+   };
+   ws.onerror=()=>{setStatus('Connection error','bad');$('liveMsg').textContent='WebSocket error. Try reconnecting.';};
+   ws.onclose=()=>{if(!manualClose){setStatus('Disconnected','bad');$('chartStatus').textContent='Disconnected';$('liveMsg').textContent='Connection closed. Press Connect live data to retry.';}};
+ }
+ function loadHistory(){send({ticks_history:selectedSymbol,adjust_start_time:1,count:500,end:'latest',granularity,style:'candles'});}
+ function updateCandle(p,epoch){const bucket=Math.floor(epoch/granularity)*granularity;if(lastCandleBucket===null||!candles.length){candles.push({epoch:bucket,open:p,high:p,low:p,close:p});lastCandleBucket=bucket;}
+ else if(bucket===lastCandleBucket){let c=candles[candles.length-1];c.high=Math.max(c.high,p);c.low=Math.min(c.low,p);c.close=p;}
+ else if(bucket>lastCandleBucket){candles.push({epoch:bucket,open:p,high:p,low:p,close:p});lastCandleBucket=bucket;if(candles.length>160)candles.shift();}
+ }
+ function fmt(n){if(!Number.isFinite(n))return'—';return n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:5});}
+ function ema(values,period){if(values.length<period)return null;let k=2/(period+1),v=values.slice(0,period).reduce((a,b)=>a+b,0)/period;for(let i=period;i<values.length;i++)v=values[i]*k+v*(1-k);return v;}
+ function rsi(values,period=14){if(values.length<=period)return null;let gain=0,loss=0;for(let i=values.length-period;i<values.length;i++){let d=values[i]-values[i-1];if(d>0)gain+=d;else loss-=d;}gain/=period;loss/=period;if(loss===0)return 100;return 100-(100/(1+gain/loss));}
+ function updateAnalysis(){
+   const values=candles.map(c=>c.close);if(lastPrice!==null && (!values.length||values[values.length-1]!==lastPrice))values.push(lastPrice);
+   if(values.length<22){$('signalTitle').textContent='Gathering data';$('signalDesc').textContent='Need more candles for EMA and RSI';return;}
+   const e9=ema(values,9),e21=ema(values,21),rv=rsi(values,14),mom=values[values.length-1]-values[Math.max(0,values.length-6)];
+   let bias='NEUTRAL',desc='Trend and momentum are mixed',tag='WAIT',icon='◈',cls='neutral';
+   if(e9>e21 && rv>=50 && rv<70 && mom>0){bias='BULLISH';desc='EMA trend and momentum align upward';tag='WATCH BUY';icon='↗';cls='bull';}
+   else if(e9<e21 && rv<=50 && rv>30 && mom<0){bias='BEARISH';desc='EMA trend and momentum align downward';tag='WATCH SELL';icon='↘';cls='bear';}
+   else if(rv>=70){desc='RSI is elevated; avoid chasing momentum';}
+   else if(rv<=30){desc='RSI is low; wait for confirmation';}
+   $('signalTitle').textContent=bias==='NEUTRAL'?'Neutral conditions':bias[0]+bias.slice(1).toLowerCase()+' conditions';
+   $('signalDesc').textContent=desc;$('signalTag').textContent=tag;$('signalIcon').textContent=icon;
+   $('signalIcon').style.color=cls==='bull'?colors.green:cls==='bear'?colors.red:colors.cyan;
+   $('miniBias').textContent=bias;$('miniBias').style.color=cls==='bull'?colors.green:cls==='bear'?colors.red:colors.text;
+   $('emaText').textContent=e9>e21?'EMA 9 above 21':e9<e21?'EMA 9 below 21':'EMAs aligned';$('emaBar').style.width=(e9>e21?'75%':e9<e21?'25%':'50%');$('emaBar').style.background=e9>e21?colors.green:e9<e21?colors.red:colors.cyan;
+   $('rsiText').textContent=rv.toFixed(1)+(rv>70?' · high':rv<30?' · low':'');$('rsiBar').style.width=Math.max(0,Math.min(100,rv))+'%';$('rsiBar').style.background=rv>70?colors.red:rv<30?colors.green:colors.cyan;
+   const maxAbs=Math.max(Math.abs(mom),1e-8);$('momText').textContent=(mom>0?'+':'')+fmt(mom);$('momBar').style.width=Math.min(100,Math.abs(mom)/maxAbs*100)+'%';$('momBar').style.background=mom>0?colors.green:colors.red;
+   $('liveMsg').textContent='Analysis refreshed · '+new Date().toLocaleTimeString();
+   const row={time:new Date().toLocaleTimeString(),price:lastPrice,bias,rsi:rv};if(!history.length||history[0].bias!==bias||Math.abs(history[0].price-lastPrice)>0){history.unshift(row);history=history.slice(0,5);renderHistory();}
+ }
+ function renderHistory(){ $('history').innerHTML=history.map(h=>`<tr><td>${h.time}</td><td>${fmt(h.price)}</td><td><span class="tag ${h.bias==='BULLISH'?'bull':h.bias==='BEARISH'?'bear':'neutral'}">${h.bias}</span></td><td>${h.rsi.toFixed(1)}</td></tr>`).join('');}
+ function drawChart(){
+   const canvas=$('chart'),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=Math.max(1,Math.floor(rect.width*dpr));canvas.height=Math.max(1,Math.floor(rect.height*dpr));const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);const w=rect.width,h=rect.height;ctx.clearRect(0,0,w,h);
+   const data=candles.slice(-65);if(data.length<2){ctx.fillStyle=colors.muted;ctx.font='12px system-ui';ctx.fillText('Waiting for candle history…',12,h/2);return;}
+   const lo=Math.min(...data.map(c=>c.low)),hi=Math.max(...data.map(c=>c.high)),pad=(hi-lo)*.12||1,min=lo-pad,max=hi+pad;const y=v=>h-20-(v-min)/(max-min)*(h-40);const step=w/data.length,cw=Math.max(2,step*.58);
+   ctx.strokeStyle=colors.grid;ctx.lineWidth=1;ctx.fillStyle=colors.muted;ctx.font='10px system-ui';
+   for(let i=0;i<5;i++){let yy=12+i*(h-35)/4;ctx.beginPath();ctx.moveTo(0,yy);ctx.lineTo(w,yy);ctx.stroke();let val=max-(max-min)*i/4;ctx.fillText(fmt(val),5,Math.max(10,yy-3));}
+   data.forEach((c,i)=>{let x=i*step+step/2,up=c.close>=c.open,col=up?colors.green:colors.red;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y(c.high));ctx.lineTo(x,y(c.low));ctx.stroke();let top=Math.min(y(c.open),y(c.close)),bh=Math.max(1,Math.abs(y(c.open)-y(c.close)));ctx.fillRect(x-cw/2,top,cw,bh);});
+   const closes=data.map(c=>c.close);function drawEma(period,color){ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=1.5;let started=false;for(let i=0;i<closes.length;i++){let subset=closes.slice(0,i+1);let val=ema(subset,period);if(val===null)continue;let x=i*step+step/2,yy=y(val);if(!started){ctx.moveTo(x,yy);started=true}else ctx.lineTo(x,yy);}ctx.stroke();}
+   drawEma(9,colors.cyan);drawEma(21,'#9c8cff');
+ }
+ $('connect').addEventListener('click',connect);
+ $('market').addEventListener('change',e=>{selectedSymbol=e.target.value;$('symbolText').textContent=selectedSymbol;$('marketName').textContent=marketNames[selectedSymbol]||selectedSymbol;resetData();if(ws&&ws.readyState===WebSocket.OPEN){send({forget_all:'ticks'});send({forget_all:'ticks_history'});loadHistory();send({ticks:selectedSymbol,subscribe:1});}});
+ $('timeframe').addEventListener('change',e=>{granularity=Number(e.target.value);$('tfLabel').textContent=e.target.options[e.target.selectedIndex].text+' candles';$('timeText').textContent=e.target.options[e.target.selectedIndex].text;resetData();if(ws&&ws.readyState===WebSocket.OPEN)loadHistory();});
+ function resetData(){candles=[];ticks=[];history=[];tickCount=0;lastPrice=null;lastCandleBucket=null;$('tickCount').textContent='0';$('history').innerHTML='<tr><td colspan="4" class="muted">Waiting for readings…</td></tr>';drawChart();}
+ window.addEventListener('resize',drawChart);drawChart();
+})();
+</script>
+</body>
+</html>
